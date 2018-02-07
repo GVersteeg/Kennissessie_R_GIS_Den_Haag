@@ -1,0 +1,152 @@
+---
+title: "Kennissessie R en GIS"
+author: "Elisabeth van der Meijde"
+date: "15 februari 2018"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+# libraries
+require(knitr)
+require(rgdal)
+require(tmap)
+require(sf)
+require(ggmap)
+require(grid)
+require(raster)
+require(rgeos)
+opts_chunk$set(fig.width=8, fig.height=5, fig.path='Figs/',
+                      echo=TRUE, warning=FALSE, message=FALSE, cache=FALSE, collapse=TRUE)
+```
+## Gemeente Den Haag
+Situatie nu:
+
+* Lokale opslag
+* SPSS
+* ArcGIS
+
+-> automatiseren 
+
+* Data Lake
+* Rstudio Server
+* & iets van een BI-tool
+
+## Waarom?
+* Omgevingswet
+* "*Met de Omgevingswet wil de overheid de regels voor ruimtelijke ontwikkeling vereenvoudigen en samenvoegen. ... Naar verwachting treedt de Omgevingswet in 2021 in werking.*" 
+
+    + bron: <a href="www.rijksoverheid.nl">www.rijksoverheid.nl</a>
+
+* Alle (niet privacy-gevoelige) data moet openbaar worden
+
+## Hoe doe je dat?
+* csv-tje op opendata.nl
+* Maar visualiseren zou leuk zijn
+
+    + Dashboards
+    + Interactief?
+    + Kaarten
+        + Niveau stadsdeel, postcode 5, straat
+        
+## Wat doen ze nu al?
+* documenten op opendata/opengeodata/dataplatform
+* csv, txt, etc.
+* shapefiles, json, XML
+* webservice
+* via arcgis.com kaarten
+
+* Meeste niet interpreteerbaar zonder software (en kennis)
+
+## Voorbeeld: 
+Gemiddelde Energielabel per pc5 Den Haag
+
+* <a href="https://data.overheid.nl/data/dataset/energielabels-postcode-5-niveau-den-haag-2016">energielabels DH (data.overheid.nl)</a>
+* <a href="https://denhaag.dataplatform.nl/dataset/fe495486-bb52-4b2a-a193-ac1c0b16a23e">energielabels DH (denhaag.dataplatform.nl)</a>
+* <a href="http://geoportaal-ddh.opendata.arcgis.com/datasets/energielabels-dh-1?selectedAttribute=MEAN_labelCode">energielabels DH (ArcGis.com)</a>
+
+## Inlezen
+```{r energielabels code, echo=TRUE}
+download.file("http://geoportaal-ddh.opendata.arcgis.com/datasets/ed833f69fb82463ea63d37be00c356c3_0.zip", "energielabels.zip", mode="wb")
+unzip("energielabels.zip")
+f_energielabels <- "Energielabels_Postcode_5_niveau_Den_Haag_2016.shp"
+fl_energielabels <- ogrListLayers(f_energielabels) ## het is er slechts 1
+energielabels <- readOGR(f_energielabels,layer=fl_energielabels[1])
+```
+
+## Output
+```{r energielabels output, echo=FALSE}
+tmap_mode("view")
+tm_shape(energielabels) +
+  tm_polygons("MEAN_label", style="jenks", alpha=.5, palette=colorRampPalette(c("green", "red"))(5)) +
+  tm_compass(type="arrow", position=c("right", "top"), fontsize = 2 ) + 
+  tm_scale_bar()
+```
+
+## Wat is GIS?
+* Nou dat dus
+
+    + Data
+    + Geo/spatial
+    + Visualiseren
+
+## Paar dingen die je moet weten
+1. Projectie
+2. Vector vs. raster
+3. Layers
+4. Geoprocessing Tools
+
+## Projectie
+* De Aarde is rond
+* Een kaart is plat (meestal dan)
+* 'Stukje oprekken'
+<iframe src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Tissot_mercator.png/440px-Tissot_mercator.png" width="240" height="135" frameborder="0"></iframe>
+
+## Vector data
+* Vormen (punten, lijnen, polygonen)
+* Erg nauwkeurig
+* OpenStreetMap data
+```{r energielabels vector, echo=FALSE}
+tmap_mode("plot")
+tm_shape(energielabels) +
+  tm_polygons("MEAN_label", style="jenks", alpha=.5, palette=colorRampPalette(c("green", "red"))(5)) +
+  tm_compass(type="arrow", position=c("right", "top"), fontsize = 2 ) + 
+  tm_scale_bar()
+```
+
+## Raster data
+* Hokjes (meestel vierkant)
+* Resolutie
+* Satellieten/aerial data
+* Extra dimensie: tijd
+<iframe src="http://www.alamy.com/stock-photo-colour-satellite-image-of-rotterdam-the-hague-and-dordrecht-netherlands-84972020.html" width="240" height="135" frameborder="0"></iframe>
+
+## Layers
+* Lagen 
+* Over elkaar heen plotten
+* Zoveel als je wil
+* Raster & Vector door elkaar
+* Pas op: Projectie
+
+## Geoprocessing Tools
+* Aggregeren (pc5 -> pc4)
+* Join (van 2 -> 1 layer)
+* Reproject (de ene laag zoals een andere)
+* Etc
+
+## Toekomst
+* Big data
+* Steeds meer data
+* Meer satellieten
+* We kunnen steeds meer meten
+* Visualiseren
+
+## Voorbeeld: Sentinal 5
+* Trace gases (bv: NO2, ozon, formaldehyde, SO2, methaan, CO, aerosolen)
+* Resolutie 7 km × 3.5 km / dagelijks!
+<iframe src="http://www.esa.int/spaceinvideos/content/view/embedjw/495629" width="240" height="135" frameborder="0"></iframe>
+
+## Zelf aan de slag
+* Den Haag
+* Energielabels (vector)
+* Gezondheid van vegetatie (raster)
+
