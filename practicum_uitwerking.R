@@ -132,11 +132,16 @@ tm_shape(energielabels_p4) +
 # je weet ws wel dat je een gemiddelde alleen kan gebruiken voor normaal verdeelde data.
 # misschien wil je dus eerst een histogrammetje maken?
 hist(crop_ndvi_vegi)
+hist(values(crop_ndvi_vegi))
 hist(log10(crop_ndvi_vegi))
+range(values(crop_ndvi_vegi), na.rm=TRUE)
+mean(exp(log10(values(crop_ndvi_vegi))), na.rm=TRUE)
+var(exp(log10(values(crop_ndvi_vegi))), na.rm=TRUE)
+range(exp(log10(values(crop_ndvi_vegi))), na.rm=TRUE)
 
 # enne, pas op: raster::extract duurt best lang!
 
-energielabels_p4@data$mean_ndvi <- round(exp(raster::extract(log10(crop_ndvi_vegi), 
+energielabels_p4@data$mean_ndvi <- round(exp(raster::extract(crop_ndvi_vegi, 
                                                              energielabels_p4, fun = mean, na.rm=TRUE)[,1]),2)
 
 # en plot het resultaat
@@ -148,13 +153,15 @@ tm_shape(energielabels_p4) +
 
 # conclusie: gemiddeld zijn de verschillen erg klein
 # we hebben echter in de originele schaal gezien dat er ook uitschieters naar boven en beneden zijn.
-# laten we de hele riedel nog een keer doen, maar dan met variantie
-energielabels_p4@data$var_ndvi <- round(exp(raster::extract(log10(crop_ndvi_vegi), 
-                                                            energielabels_p4, fun = var, na.rm=TRUE)[,1]),3)
+# laten we de hele riedel nog een keer doen, maar dan met max
+energielabels_p4@data$max_ndvi <- round(exp(raster::extract(crop_ndvi_vegi, 
+                                                             energielabels_p4, fun = max, na.rm=TRUE)[,1]),2)
 
 # en plot het resultaat
 tm_shape(energielabels_p4) +
-  tm_polygons("var_ndvi", style="jenks", alpha=.5, border.col = "black", palette=colorRampPalette(c("pink", "purple"))(5)) +
-  tm_text("var_ndvi", col="black") +
+  tm_polygons("max_ndvi", style="jenks", alpha=.5, border.col = "black", palette=colorRampPalette(c("red", "green"))(10)) +
+  tm_text("max_ndvi", col="black") +
   tm_compass(type="arrow", position=c("right", "top"), fontsize = 2 ) + 
   tm_scale_bar()
+
+
