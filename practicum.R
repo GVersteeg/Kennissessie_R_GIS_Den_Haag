@@ -113,11 +113,4 @@ plot(ndvi)
 
 # en plot het resultaat
 
-# conclusie: gemiddeld zijn de verschillen erg klein
-# we hebben echter in de originele schaal gezien dat er ook uitschieters naar boven en beneden zijn.
-# laten we de hele riedel nog een keer doen, maar dan met max
-
-# en plot het resultaat
-
-
 
