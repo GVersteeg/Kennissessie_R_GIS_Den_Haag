@@ -23,11 +23,13 @@ tm_shape(energielabels) +
   tm_compass(type="arrow", position=c("right", "top"), fontsize = 2 ) + 
   tm_scale_bar()
 
-# de trend is duidelijk: binnenstad is minder energiezuinig dan de buitenwijken
+# de trend is duidelijk: de binnenstad heeft minder energiezuinige panden dan de buitenwijken
 # het zijn echter wel erg veel en kleine gebiedjes
 # maak eenzelfde kaart, maar dan voor p4 gebieden
+# natuurlijk zou je dat eigenlijk met de originele data moeten doen (per kadasterkavel)
+# maar die hebben we niet, dus gebruik deze keer het gemiddelde van het gemiddelde
 
-# van p5 p4 maken, maar doet niets met de data
+# maak van p5 p4 gebieden met unionSpatialPolygons, maar doet niets met de data
 energielabels@data$PC4CODE <- substring(energielabels@data$PC5CODE,1,4)
 energielabels_p4 <- unionSpatialPolygons(energielabels, energielabels@data$PC4CODE )
 
@@ -92,7 +94,9 @@ plot(crop_ndvi)
 
 values(crop_ndvi)
 
-# alle waardes < 0.2 negeren (NA)
+# waardes onder 0 zijn zeer waarschijnlijk geen vegetatie
+# & de ndvi neemt rond de 0 vaak water mee
+# negeer daarom alle waardes < 0.2 negeren (NA)
 crop_ndvi_vegi <- crop_ndvi
 values(crop_ndvi_vegi) <- ifelse(values(crop_ndvi)<0.2,NA,values(crop_ndvi))
 plot(crop_ndvi_vegi)
@@ -118,3 +122,39 @@ tm_shape(energielabels_p4) +
   tm_compass(type="arrow", position=c("right", "top"), fontsize = 2 ) + 
   tm_scale_bar()
 
+#######################################################################################
+# BONUS: combineer de vector en raster data in één layer
+#######################################################################################
+# Om je op weg te helpen, de methode die je nodig hebt is: raster::extract
+# tidyverse heeft een methode die ook extract heet, en overschrijft die van  raster
+# met raster:: dwing je R om de juiste methode te gebruiken.
+# de output die de methode geeft is een matrix (met 1 kolom), en niet numeric.
+# je weet ws wel dat je een gemiddelde alleen kan gebruiken voor normaal verdeelde data.
+# misschien wil je dus eerst een histogrammetje maken?
+hist(crop_ndvi_vegi)
+hist(log10(crop_ndvi_vegi))
+
+# enne, pas op: raster::extract duurt best lang!
+
+energielabels_p4@data$mean_ndvi <- round(exp(raster::extract(log10(crop_ndvi_vegi), 
+                                                             energielabels_p4, fun = mean, na.rm=TRUE)[,1]),2)
+
+# en plot het resultaat
+tm_shape(energielabels_p4) +
+  tm_polygons("mean_ndvi", style="jenks", alpha=.5, border.col = "black", palette=colorRampPalette(c("red", "green"))(10)) +
+  tm_text("mean_ndvi", col="black") +
+  tm_compass(type="arrow", position=c("right", "top"), fontsize = 2 ) + 
+  tm_scale_bar()
+
+# conclusie: gemiddeld zijn de verschillen erg klein
+# we hebben echter in de originele schaal gezien dat er ook uitschieters naar boven en beneden zijn.
+# laten we de hele riedel nog een keer doen, maar dan met variantie
+energielabels_p4@data$var_ndvi <- round(exp(raster::extract(log10(crop_ndvi_vegi), 
+                                                            energielabels_p4, fun = var, na.rm=TRUE)[,1]),3)
+
+# en plot het resultaat
+tm_shape(energielabels_p4) +
+  tm_polygons("var_ndvi", style="jenks", alpha=.5, border.col = "black", palette=colorRampPalette(c("pink", "purple"))(5)) +
+  tm_text("var_ndvi", col="black") +
+  tm_compass(type="arrow", position=c("right", "top"), fontsize = 2 ) + 
+  tm_scale_bar()

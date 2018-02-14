@@ -37,6 +37,8 @@ Situatie nu:
 
     + bron: <a href="www.rijksoverheid.nl">www.rijksoverheid.nl</a>
 
+<BR>
+
 * Alle (niet privacy-gevoelige) data moet openbaar worden
 
 ## Hoe doe je dat?
@@ -44,9 +46,9 @@ Situatie nu:
 * Maar visualiseren zou leuk zijn
 
     + Dashboards
-    + Interactief?
     + Kaarten
         + Niveau stadsdeel, postcode 5, straat
+    + Interactief?
         
 ## Wat doen ze nu al?
 * documenten op opendata/opengeodata/dataplatform
@@ -98,7 +100,7 @@ tm_shape(energielabels) +
 ## Projectie
 * De Aarde is rond
 * Een kaart is plat (meestal dan)
-* 'Stukje oprekken'
+* 'Er is altijd een stukje dat je moet oprekken'
 <iframe src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Tissot_mercator.png/440px-Tissot_mercator.png" width="240" height="135" frameborder="0"></iframe>
 
 ## Vector data
@@ -115,13 +117,13 @@ tm_shape(energielabels) +
 
 ## Raster data
 * Hokjes (meestel vierkant)
-* Resolutie
-* Satellieten/aerial data
-* Extra dimensie: tijd
+* Resolutie (30x30m vs. 5x5km)
+* Satellieten/aerial data (hoe hoog staan ze)
+* Extra dimensie: tijd (hoe hoger hoe vaker)
 <iframe src="http://www.alamy.com/stock-photo-colour-satellite-image-of-rotterdam-the-hague-and-dordrecht-netherlands-84972020.html" width="240" height="135" frameborder="0"></iframe>
 
 ## Layers
-* Lagen 
+* Lagen kaart
 * Over elkaar heen plotten
 * Zoveel als je wil
 * Raster & Vector door elkaar
@@ -138,7 +140,7 @@ tm_shape(energielabels) +
 * Steeds meer data
 * Meer satellieten
 * We kunnen steeds meer meten
-* Visualiseren
+* **Visualiseren**
 
 ## Voorbeeld: Sentinal 5
 * Trace gases (bv: NO2, ozon, formaldehyde, SO2, methaan, CO, aerosolen)
@@ -149,4 +151,14 @@ tm_shape(energielabels) +
 * Den Haag
 * Energielabels (vector)
 * Gezondheid van vegetatie (raster)
+
+## Files
+* https://github.com/evandermeijde/Kennissessie_R_GIS_Den_Haag
+* http://rpubs.com/evandermeijde/DenHaagExploreGISinR
+* http://rpubs.com/evandermeijde/KennisSessieRinGIS
+*  "/Dropbox (FourPoints)/Projecten/Gemeente Den Haag/GIS in R/LandSat"
+* http://www.esa.int/Our_Activities/Observing_the_Earth/Copernicus/Sentinel-5P/Introducing_Sentinel-5P
+
+
+
 
